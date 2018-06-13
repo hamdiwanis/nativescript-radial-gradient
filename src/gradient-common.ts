@@ -2,14 +2,17 @@ import { StackLayout } from "tns-core-modules/ui/layouts/stack-layout";
 import { Color } from "tns-core-modules/color";
 import { Property } from "tns-core-modules/ui/core/view";
 
-const directionProperty = new Property<Gradient, string>({
-  name: "direction",
-  defaultValue: "to bottom"
+export interface Point {
+    x: number,
+    y: number
+}
+
+const radiusProperty = new Property<Gradient, number>({
+  name: "radius",
 });
 
-const borderRadiusProperty = new Property<Gradient, number>({
-  name: "borderRadius",
-  defaultValue: 0
+const centerProperty = new Property<Gradient, Point>({
+    name: "center",
 });
 
 const colorsProperty = new Property<Gradient, string>({
@@ -17,21 +20,6 @@ const colorsProperty = new Property<Gradient, string>({
 });
 
 export abstract class Gradient extends StackLayout {
-
-  [directionProperty.setNative](value?: string) {
-    if (value) {
-      const sanitizedValue = value.toLowerCase().trim();
-      if (Gradient.isValidDirection(sanitizedValue)) {
-        this.updateDirection(sanitizedValue);
-      }
-    }
-  }
-
-  [borderRadiusProperty.setNative](value: number) {
-    if (value) {
-      this.updateBorderRadius(value);
-    }
-  }
 
   [colorsProperty.setNative](value?: string) {
     if (value) {
@@ -48,35 +36,24 @@ export abstract class Gradient extends StackLayout {
     }
   }
 
-  private static isValidDirection(value: string): boolean {
-    return GradientDirection.TO_BOTTOM === value
-        || GradientDirection.TO_TOP === value
-        || GradientDirection.TO_LEFT === value
-        || GradientDirection.TO_RIGHT === value
-        || GradientDirection.TO_BOTTOM_LEFT === value
-        || GradientDirection.TO_TOP_LEFT === value
-        || GradientDirection.TO_BOTTOM_RIGHT === value
-        || GradientDirection.TO_TOP_RIGHT === value;
-  }
+    [radiusProperty.setNative](value?: number) {
+        if (value) {
+            this.updateRadius(value);
+        }
+    }
 
+    [centerProperty.setNative](value?: Point) {
+        if (value) {
+            this.updateCenter(value);
+        }
+    }
+
+
+  protected abstract updateCenter(center: Point);
+  protected abstract updateRadius(radius: number);
   protected abstract updateColors(colors: Color[]);
-
-  protected abstract updateBorderRadius(radius: number);
-
-  protected abstract updateDirection(direction: string);
 }
 
-directionProperty.register(Gradient);
-borderRadiusProperty.register(Gradient);
 colorsProperty.register(Gradient);
-
-export namespace GradientDirection {
-  export const TO_BOTTOM = "to bottom";
-  export const TO_TOP = "to top";
-  export const TO_RIGHT = "to right";
-  export const TO_LEFT = "to left";
-  export const TO_BOTTOM_LEFT = "to bottom left";
-  export const TO_TOP_LEFT = "to top left";
-  export const TO_BOTTOM_RIGHT = "to bottom right";
-  export const TO_TOP_RIGHT = "to top right";
-}
+centerProperty.register(Gradient);
+radiusProperty.register(Gradient);

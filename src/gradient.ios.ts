@@ -1,87 +1,80 @@
 import { Color } from "tns-core-modules/color";
-import { Gradient as GradientBase, GradientDirection } from "./gradient-common";
+import { Point, Gradient as GradientBase } from "./gradient-common";
+
+declare var kCGGradientDrawsAfterEndLocation;
 
 export class Gradient extends GradientBase {
-  private _gradientLayer: CAGradientLayer;
+    private _gradientLayer;
+    private options = {
+        colors: null,
+        radius: null,
+        center: null
+    };
 
-  constructor() {
-    super();
-    this._gradientLayer = CAGradientLayer.layer();
-    if (this.ios) {
-      this.ios.layer.insertSublayerAtIndex(this._gradientLayer, 0);
+    constructor() {
+        super();
+        this._gradientLayer = RadialGradientLayer.layer();
+        if (this.ios) {
+            this.ios.layer.insertSublayerAtIndex(this._gradientLayer, 0);
+        }
     }
-  }
 
-  public onLayout(left: number, top: number, right: number, bottom: number): void {
-    super.onLayout(left, top, right, bottom);
-    this._gradientLayer.frame = this.ios.layer.bounds;
-  }
-
-
-  protected updateBorderRadius(radius: number) {
-    if (radius) {
-      this._gradientLayer.cornerRadius = radius;
+    public onLayout(left: number, top: number, right: number, bottom: number): void {
+        super.onLayout(left, top, right, bottom);
+        this._gradientLayer.frame = this.ios.layer.bounds;
     }
-  }
 
-  protected updateColors(colors?: Color[]): void {
-    if (colors && colors.length >= 2 && this.ios && this._gradientLayer) {
-      const colorsArray = NSMutableArray.alloc().initWithCapacity(colors.length);
-      for (let _color of colors) {
-        colorsArray.addObject(_color.ios.CGColor);
-      }
-      this._gradientLayer.colors = colorsArray;
+    protected updateColors(colors?: Color[]): void {
+        if (colors && colors.length >= 2 && this.ios && this._gradientLayer) {
+            const colorsArray = NSMutableArray.alloc().initWithCapacity(colors.length);
+            for (let _color of colors) {
+                colorsArray.addObject(_color.ios.CGColor);
+            }
+            this.options.colors = colorsArray;
+            this.updateView();
+        }
     }
-  }
 
-  protected updateDirection(direction?: string): void {
-    if (direction && this.ios && this._gradientLayer) {
-      switch (direction) {
-        case GradientDirection.TO_BOTTOM:
-          this._gradientLayer.startPoint = CGPointMake(0.5, 0);
-          this._gradientLayer.endPoint = CGPointMake(0.5, 1);
-          break;
-
-        case GradientDirection.TO_TOP:
-          this._gradientLayer.startPoint = CGPointMake(0.5, 1);
-          this._gradientLayer.endPoint = CGPointMake(0.5, 0);
-          break;
-
-        case GradientDirection.TO_RIGHT:
-          this._gradientLayer.startPoint = CGPointMake(0, 0.5);
-          this._gradientLayer.endPoint = CGPointMake(1, 0.5);
-          break;
-
-        case GradientDirection.TO_LEFT:
-          this._gradientLayer.startPoint = CGPointMake(1, 0.5);
-          this._gradientLayer.endPoint = CGPointMake(0, 0.5);
-          break;
-
-        case GradientDirection.TO_BOTTOM_LEFT:
-          this._gradientLayer.startPoint = CGPointMake(1, 0);
-          this._gradientLayer.endPoint = CGPointMake(0, 1);
-          break;
-
-        case GradientDirection.TO_TOP_LEFT:
-          this._gradientLayer.startPoint = CGPointMake(1, 1);
-          this._gradientLayer.endPoint = CGPointMake(0, 0);
-          break;
-
-        case GradientDirection.TO_BOTTOM_RIGHT:
-          this._gradientLayer.startPoint = CGPointMake(0, 0);
-          this._gradientLayer.endPoint = CGPointMake(1, 1);
-          break;
-
-        case GradientDirection.TO_TOP_RIGHT:
-          this._gradientLayer.startPoint = CGPointMake(0, 1);
-          this._gradientLayer.endPoint = CGPointMake(1, 0);
-          break;
-
-        default:
-          this._gradientLayer.startPoint = CGPointMake(0.5, 0);
-          this._gradientLayer.endPoint = CGPointMake(0.5, 1);
-          break;
-      }
+    protected updateCenter(center: Point) {
+        if (center && this.ios && this._gradientLayer) {
+            this.options.center = center;
+            this.updateView();
+        }
     }
-  }
+
+    protected updateRadius(radius: number) {
+        if (radius && this.ios && this._gradientLayer) {
+            this.options.radius = radius;
+            this.updateView();
+        }
+    }
+
+    protected updateView() {
+        this._gradientLayer.colors = this.options.colors;
+        this._gradientLayer.radius = this.options.radius;
+        this._gradientLayer.center = this.options.center;
+        this._gradientLayer.setNeedsDisplay();
+    }
+}
+
+class RadialGradientLayer extends CALayer {
+    colors: NSMutableArray<any>;
+    radius: number;
+    center: Point;
+
+    drawInContext(ctx) {
+        if(!this.colors) return;
+
+        const gradient = CGGradientCreateWithColors(null, this.colors, null);
+        // todo: make center as range between 0 - 1 to match with android
+        const center = this.center ? CGPointMake(this.center.x, this.center.y)
+                                   : CGPointMake(CGRectGetMidX(this.bounds), CGRectGetMidY(this.bounds));
+        const radius = this.radius ? this.radius : Math.min(this.bounds.size.width, this.bounds.size.height);
+        CGContextDrawRadialGradient(ctx, gradient, center, 0, center, radius, kCGGradientDrawsAfterEndLocation);
+
+        if(gradient){
+            console.log(gradient);
+            CGGradientRelease(gradient);
+        }
+    }
 }

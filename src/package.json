@@ -1,7 +1,7 @@
 {
-  "name": "nativescript-gradient",
-  "version": "2.0.1",
-  "description": "NativeScript plugin for gradient layouts.",
+  "name": "nativescript-radial-gradient",
+  "version": "0.8.0",
+  "description": "NativeScript plugin for radial gradient layouts.",
   "main": "gradient",
   "typings": "index.d.ts",
   "nativescript": {
@@ -11,12 +11,12 @@
     }
   },
   "scripts": {
+    "tsc": "tsc -skipLibCheck",
+    "plugin.tscwatch": "npm run tsc -- -w",
+    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
+    "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
     "build": "npm i && tsc",
-    "demo.ios": "npm run preparedemo && cd ../demo && tns run ios --emulator",
-    "demo.ng.ios": "npm run preparedemo.ng && cd ../demo-ng && tns run ios --emulator",
     "demo.ios.device": "npm run preparedemo && cd ../demo && tns platform remove ios && tns run ios",
-    "demo.android": "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
-    "demo.ng.android": "npm run preparedemo.ng && cd ../demo-ng && tns platform remove android && tns run android --justlaunch",
     "test": "npm run tslint && npm run tslint.demo && cd ../demo && tns build ios && tns build android",
     "test.ios": "cd ../demo && tns platform remove ios && tns test ios --emulator",
     "test.ios.device": "cd ../demo && tns platform remove ios && tns test ios",
@@ -34,41 +34,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/EddyVerbruggen/nativescript-gradient.git"
+    "url": "https://github.com/hamdiwanis/nativescript-radial-gradient.git"
   },
   "keywords": [
     "NativeScript",
     "TypeScript",
     "Android",
     "iOS",
-    "Gradient"
+    "Gradient",
+    "radial"
   ],
   "author": {
-    "name": "Eddy Verbruggen",
-    "email": "eddyverbruggen@gmail.com",
-    "url": "https://github.com/eddyverbruggen"
+    "name": "Hamdi Wanis",
+    "email": "hamdiwanis@gmail.com",
+    "url": "https://github.com/hamdiwanis"
   },
-  "contributors": [
-    {
-      "name": "Winfred van Egteren",
-      "url": "https://github.com/wvegteren"
-    },
-    {
-      "name": "Brad Martin",
-      "email": "bradwaynemartin@gmail.com",
-      "url": "https://github.com/bradmartin"
-    },
-    {
-      "name": "Jeremiah Ogbomo",
-      "email": "jaybladez09@gmail.com",
-      "url": "https://github.com/jogboms"
-    }
-  ],
   "bugs": {
-    "url": "https://github.com/EddyVerbruggen/nativescript-gradient/issues"
+    "url": "https://github.com/hamdiwanis/nativescript-radial-gradient/issues"
   },
   "license": "MIT",
-  "homepage": "https://github.com/EddyVerbruggen/nativescript-gradient",
+  "homepage": "https://github.com/hamdiwanis/nativescript-radial-gradient",
   "readmeFilename": "README.md",
   "devDependencies": {
     "@angular/common": "~4.1.3",

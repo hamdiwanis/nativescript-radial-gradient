@@ -8,8 +8,11 @@ node_modules/
 *.log
 *.d.ts
 src/hooks/
+src/node_modules/
+src/platforms/
 !src/index.d.ts
 !src/references.d.ts
+!src/scripts/*.js
 demo/lib
 demo/platforms
 demo-ng/platforms
