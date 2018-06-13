@@ -11,7 +11,7 @@ tns plugin add nativescript-radial-gradient
 
 ### Example
 ```html
-<Gradientcolors="#FF0077, red, #FF00FF" borderRadius="20" center="{x: 0: y: 0}">
+<Gradientcolors="#FF0077, red, #FF00FF" radius="20" center="{x: 0: y: 0}">
   <Label class="p-20 c-white" horizontalAlignment="center" text="My gradients are the best." textWrap="true"></Label>
   <Label class="p-10 c-white" horizontalAlignment="center" text="It's true." textWrap="true"></Label>
 </Gradient>
